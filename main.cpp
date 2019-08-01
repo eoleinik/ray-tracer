@@ -5,7 +5,7 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "stb_image_write.h"
+#include "stb/stb_image_write.h"
 #include "hitable.h"
 #include "sphere.h"
 #include "hitable_list.h"
