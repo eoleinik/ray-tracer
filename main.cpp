@@ -41,8 +41,8 @@ void draw_ppm(int nx, int ny) {
 
 int main() {
 
-    int nx = 400;
-    int ny = 200;
+    int nx = 800;
+    int ny = 400;
 
     vec3 upper_left_corner(-2.0, 1.0, -1.0);
     vec3 horizontal(4.0, 0.0, 0.0);
