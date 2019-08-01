@@ -23,7 +23,7 @@ vec3 random_in_unit_sphere() {
 
 vec3 color(const ray& r, hitable *world) {
     hit_record rec;
-    if (world->hit(r, 0.0, MAXFLOAT, rec)) {
+    if (world->hit(r, 0.001, MAXFLOAT, rec)) {  // slightly >0 to remove shadow-acne
         vec3 target = rec.p + rec.normal + random_in_unit_sphere();
         return 0.5*color(ray(rec.p, target-rec.p), world);
     }
@@ -53,7 +53,7 @@ int main() {
 
     int nx = 800;
     int ny = 400;
-    int ns = 20;
+    int ns = 100;
 
     hitable *list[2];
     list[0] = new sphere(vec3(0, 0, -1), 0.5);
@@ -74,6 +74,7 @@ int main() {
                 col += color(r, world);
             }
             col /= float(ns);
+            col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2])); // gamma-correction
             int serial_coord = j*nx + i;
             data[serial_coord*3] = char(255.99 * col.r());
             data[serial_coord*3+1] = char(255.99 * col.g());
