@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "vec3.h"
 #include "ray.h"
 
@@ -62,7 +63,7 @@ int main() {
 
     camera cam;
 
-    char *data=(char*)malloc(nx*ny*3);
+    vector<char> data(nx*ny*3);
 
     for (int j = ny-1; j >=0; j--) {
         for (int i = 0; i<nx; i++) {
@@ -82,7 +83,6 @@ int main() {
         }
     }
 
-    stbi_write_jpg("helloworld.jpg", nx, ny, 3, data, 100);
-    free(data);
+    stbi_write_jpg("helloworld.jpg", nx, ny, 3, data.data(), 100);
     return 0;
 }
