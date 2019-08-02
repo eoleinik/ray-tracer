@@ -53,7 +53,7 @@ int main() {
 
     int nx = 800;
     int ny = 400;
-    int ns = 10;
+    int ns = 100;
 
     hitable *list[5];
     list[0] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
@@ -65,7 +65,7 @@ int main() {
     list[4] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.1, 0.2, 0.5)));
     hitable *world = new hitable_list(list, 5);
 
-    camera cam(90, float(nx)/float(ny));
+    camera cam(vec3(1, 1, 1), vec3(0, 0, -1), vec3(0, 1, 0), 45, float(nx)/float(ny));
 
     vector<char> data(nx*ny*3);
 
