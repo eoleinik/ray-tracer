@@ -48,6 +48,33 @@ void draw_ppm(int nx, int ny) {
     myfile.close();
 }
 
+hitable *random_scene() {
+    int n = 500;
+    auto list = new hitable*[n + 1];
+    list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
+    int i = 1;
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            float choose_mat = drand48();
+            vec3 center(a+0.9*drand48(), 0.2, b+0.9*drand48());
+            if ((center-vec3(4, 0.2, 0)).length() > 0.9) {
+                if (choose_mat < 0.8) { // matte
+                    list[i++] = new sphere(center, 0.2, new lambertian(vec3(drand48()*drand48(), drand48()*drand48(), drand48()*drand48())));
+                } else if (choose_mat < 0.95) { // metal
+                    list[i++] = new sphere(center, 0.2,
+                            new metal(vec3(0.5*(1+drand48()), 0.5*(1+drand48()), 0.5*(1+drand48())), 0.5*drand48()));
+                } else { //glass
+                    list[i++] = new sphere(center, 0.2, new dielectric(1.5));
+                }
+            }
+        }
+    }
+    list[i++] = new sphere(vec3(-4, 1, 0), 1, new lambertian(vec3(0.4, 0.2, 0.1)));
+    list[i++] = new sphere(vec3(0, 1, 0), 1, new dielectric( 1.5));
+    list[i++] = new sphere(vec3(4, 1, 0), 1, new metal(vec3(0.7, 0.6, 0.5), 0.0));
+    return new hitable_list(list, i);
+}
+
 
 int main() {
 
@@ -55,23 +82,16 @@ int main() {
     int ny = 400;
     int ns = 100;
 
-    hitable *list[5];
-    list[0] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
-    list[1] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.), 0.1));
+    auto world = random_scene();
 
-    list[2] = new sphere(vec3(1, 0, -1), 0.5, new dielectric( 1.5));
-    list[3] = new sphere(vec3(1, 0, -1), -0.48, new dielectric( 1.5));
-
-    list[4] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.1, 0.2, 0.5)));
-    hitable *world = new hitable_list(list, 5);
-
-    vec3 lookfrom(1.3, 1, 1);
-    vec3 lookat(0, 0, -1);
+    vec3 lookfrom(10, 2, 4);
+    vec3 lookat(0, 0, 0);
     float dist_to_focus = (lookfrom-lookat).length();
     float aperture = 0.1;
-    camera cam(lookfrom, lookat, vec3(0, 1, 0), 45, float(nx)/float(ny), aperture, dist_to_focus);
+    camera cam(lookfrom, lookat, vec3(0, 1, 0), 30, float(nx)/float(ny), aperture, dist_to_focus);
 
     vector<char> data(nx*ny*3);
+    int prev_percentage = 0;
 
     for (int j = ny-1; j >=0; j--) {
         for (int i = 0; i<nx; i++) {
@@ -88,6 +108,11 @@ int main() {
             data[serial_coord*3] = char(255.99 * col.r());
             data[serial_coord*3+1] = char(255.99 * col.g());
             data[serial_coord*3+2] = char(255.99 * col.b());
+        }
+        float percentage = (ny-j)/float(ny)*100.0;
+        if (prev_percentage < int(percentage)) {
+            prev_percentage = int(percentage);
+            cout<<prev_percentage<<"%\n";
         }
     }
 
